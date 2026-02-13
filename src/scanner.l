@@ -23,7 +23,7 @@ int processString();
 
 %}
 
-newline         \n
+newline         [\n]
 whitespace      [ \t]+
 integer         //TODO
 character       //TODO
