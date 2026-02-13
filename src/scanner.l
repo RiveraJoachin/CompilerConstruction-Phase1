@@ -25,7 +25,7 @@ int processString();
 
 newline         [\n]
 whitespace      [ \t]+
-integer         //TODO
+integer         0|[1-9][0-9]*
 character       //TODO
 
  /* String can contain any characters between the double quotes */
