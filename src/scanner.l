@@ -84,8 +84,8 @@ yylineno = 1;
 {multlncomment} //TODO
 
  /* Other */
-{newline}       //TODO
-{whitespace}    //TODO
+{newline}       { countLines(); }
+{whitespace}    { scancol += yyleng}
 .               {return ILLEGAL_TOK;}
 
 %%
