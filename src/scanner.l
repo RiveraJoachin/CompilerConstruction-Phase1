@@ -95,9 +95,25 @@ yylineno = 1;
 {untermstring}  {updateCol(); yyerror = "Unterminated string"; return ERROR;}
 
  /* Comments */
-{comment}       //TODO
-{untermcomment} //TODO
-{multlncomment} //TODO
+{comment} {
+    updateCol();
+    countLines();
+
+    /* ignore comments, no need for returning a token */
+}
+{untermcomment} {
+    updateCol();
+    countLines();
+
+    yyerror = "Unterminated/unfinished comment";
+    return ERROR;
+}
+{multlncomment} {
+    updateCol();
+    countLines();
+
+    /* ignore comments, no need for returning a token */
+}
 
  /* Other */
 {newline}       //TODO
