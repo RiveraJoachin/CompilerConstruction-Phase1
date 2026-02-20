@@ -23,10 +23,12 @@ int processString();
 
 %}
 
-newline         //TODO
-whitespace      //TODO
-integer         //TODO
-character       //TODO
+newline         [\r]?[\n]
+whitespace      [ \t]+
+letter          [a-zA-Z]
+digit           [0-9]
+integer         0|[1-9]{digit}*
+identifier      {letter}({letter}|{digit})*
 
  /* String can contain any characters between the double quotes */
  /* other than a newline or unescaped doublequotes */
