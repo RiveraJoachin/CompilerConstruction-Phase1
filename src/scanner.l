@@ -4,23 +4,26 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "tokendef.h"
 
  /* integers to track line and column numbers */
 int scancol = 1;
 int yycol = 1;
-int scanlineno = 1;
 
  /* char pointer to pass error messages to driver.c */
 char *yyerror;
+
+int startLine;
+int startCol;
 
  /* TODO: functions to update line and column numbers */
 void updateCol();
 void countLines();
 
- /* TODO: function to process a string literal */
-int processString();
-
+#define BUFFER_SIZE 4096 
+char temp [BUFFER_SIZE]
+int pos;
 %}
 
 newline         [\r]?[\n]
@@ -29,22 +32,6 @@ letter          [a-zA-Z]
 digit           [0-9]
 integer         0|[1-9]{digit}*
 identifier      {letter}({letter}|{digit})*
-
- /* String can contain any characters between the double quotes */
- /* other than a newline or unescaped doublequotes */
-*/
-string       //TODO
-
-
- /* If the end quote is not found in the same line the string is unterminated */
-untermstring //TODO
-
-comment         //TODO
-multlncomment   //TODO
-untermcomment   //TODO
-
-identifier      //TODO
-illidentifier   //TODO: regular expression for an illegal identifier
 
 yylineno = 1;
 
