@@ -57,8 +57,19 @@ yylineno = 1;
  /* TODO: Support all operators in mC */
 
  /* Identifiers */;
-{identifier}    //TODO
-{illidentifier} //TODO
+{identifier} {
+    updateCol();
+    countLines(); //unsure if this is necessary here, but it doesn't hurt to check for newlines in identifiers
+
+    return ID;
+}
+{illidentifier} {
+    updateCol();
+    countLines(); //unsure if this is necessary here, but it doesn't hurt to check for newlines in identifiers
+
+    yyerror = "Illegal identifier";
+    return ERROR;
+}
 
  /* Constants */;
 {integer}       //TODO
