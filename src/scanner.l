@@ -22,7 +22,7 @@ void updateCol();
 void countLines();
 
 #define BUFFER_SIZE 4096 
-char temp [BUFFER_SIZE]
+char temp [BUFFER_SIZE];
 int pos;
 %}
 
@@ -32,8 +32,14 @@ letter          [a-zA-Z]
 digit           [0-9]
 integer         0|[1-9]{digit}*
 identifier      {letter}({letter}|{digit})*
-
-yylineno = 1;
+illidentifier   {digit}+{letter}({letter}|{digit})*
+integerlead0     0{digit}+
+character       \'([^\'\\]|\\.)\'
+string          \"([^\"\\]|\\.)*\"
+untermstring    \"([^\"\\]|\\.)*$
+comment         \/\/[^\n]*
+multlncomment   \/\*([^*]|\n)*\*\/
+untermcomment   \/\*([^*]|\n)*
 
 %%
 
@@ -78,7 +84,7 @@ yylineno = 1;
  
 
 
- /* Identifiers */;
+ /* Identifiers */
 {identifier} {
     updateCol();
     countLines(); 
@@ -134,7 +140,7 @@ yylineno = 1;
 
  /* Other */
 {newline}       { countLines(); }
-{whitespace}    { scancol += yyleng}
+{whitespace}    { scancol += yyleng; }
 .               {return ILLEGAL_TOK;}
 
 %%
