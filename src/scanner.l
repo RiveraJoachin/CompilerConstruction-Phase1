@@ -72,16 +72,48 @@ yylineno = 1;
 }
 
  /* Constants */;
-{integer}       //TODO
-{integerlead0}  //TODO: "Integers may not have leading zeros"
-{character}     //TODO
+{integer} {
+    updateCol();
+    countLines(); //unsure if this is necessary again.
+
+    return INTCONST;
+}
+{integerlead0} {
+    updateCol();
+    countLines(); //unsure if necessary
+
+    yyerror = "Illegal integer constant with leading zeros (except for 0 itself)";
+    return ERROR;
+}
+{character} {
+    updateCol();
+    countLines(); //unsure if this is necessary again.
+
+    return CHARCONST;
+}
 {string}        {updateCol(); return processString();}
 {untermstring}  {updateCol(); yyerror = "Unterminated string"; return ERROR;}
 
  /* Comments */
-{comment}       //TODO
-{untermcomment} //TODO
-{multlncomment} //TODO
+{comment} {
+    updateCol();
+    countLines();
+
+    /* ignore comments, no need for returning a token */
+}
+{untermcomment} {
+    updateCol();
+    countLines();
+
+    yyerror = "Unterminated/unfinished comment";
+    return ERROR;
+}
+{multlncomment} {
+    updateCol();
+    countLines();
+
+    /* ignore comments, no need for returning a token */
+}
 
  /* Other */
 {newline}       { countLines(); }
