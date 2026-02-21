@@ -17,7 +17,7 @@ char *yyerror;
 int startLine;
 int startCol;
 
- /* TODO: functions to update line and column numbers */
+ /* functions to update line and column numbers */
 void updateCol();
 void countLines();
 
@@ -26,20 +26,15 @@ char temp [BUFFER_SIZE];
 int pos;
 %}
 
+%option noyywrap
+
 newline         [\r]?[\n]
 whitespace      [ \t]+
 letter          [a-zA-Z]
 digit           [0-9]
 integer         0|[1-9][0-9]*
 identifier      {letter}({letter}|{digit})*
-illidentifier   {digit}+{letter}({letter}|{digit})*
-integerlead0     0{digit}+
-character       \'([^\'\\]|\\.)\'
-string          \"([^\"\\]|\\.)*\"
-untermstring    \"([^\"\\]|\\.)*$
-comment         \/\/[^\n]*
-multlncomment   \/\*([^*]|\n)*\*\/
-untermcomment   \/\*([^*]|\n)*
+character       \'([^\'\\]|\\.)\
 
 %%
 
@@ -148,17 +143,13 @@ untermcomment   \/\*([^*]|\n)*
 
 /* user routines */
 
-/* TODO:
-Implement this function to keep track of column numbers
-*/
+/* Implement this function to keep track of column numbers */
 void updateCol(){
     yycol   = scancol;
     scancol += yyleng;
 }
 
-/* TODO:
-Implement this function to keep track of line numbers
-*/
+/* Implement this function to keep track of line numbers */
 void countLines(){
     yylineno++;
     scancol = 1;
