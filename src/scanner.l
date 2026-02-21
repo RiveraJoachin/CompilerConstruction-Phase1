@@ -38,6 +38,7 @@ identifier      {letter}({letter}|{digit})*
 character       \'([^\'\\]|\\.)\
 
 %x COMMENT_MODE
+%x STRING_MODE
 
 %%
 
@@ -81,9 +82,61 @@ character       \'([^\'\\]|\\.)\
  /* Constants */
 
 {integer}       {updateCol(); return INTCONST;}
-
 {character}     {updateCol(); return CHARCONST;}
-{string}        {updateCol(); return KWD_STRING;}
+
+/* String Constants */
+
+\"              {updateCol();
+                startLine = yylineno;
+                startCol = yycol;
+                strpos = 0;
+                BEGIN(IN_STRING);}
+
+<STRING_MODE>\"         {scancol++;
+                        strbuf[strpos] = '\0';
+                        yytext = strbuf;
+                        yycol = startCol;
+                        BEGIN(INITIAL);
+                        return STRCONST;}
+
+/* correct escape sequences */
+<STRING_MODE>\\n        {scancol += 2; strbuf[strpos++] = '\n';}
+<STRING_MODE>\\t        {scancol += 2; strbuf[strpos++] = '\t';}
+<STRING_MODE>\\\"       {scancol += 2; strbuf[strpos++] = '"';}
+<STRING_MODE>\\\\       {scancol += 2; strbuf[strpos++] = '\\';}
+
+/* incorrect escape sequence reproduce an error */
+<STRING_MODE>\\[^\n]   {scancol += 2;
+                       yyerror = "Unrecognized escape character in String";
+                       yycol = startCol;
+                       /* eat the rest of the string so we dont get garbage output */
+                       {int s;
+                        while ((s = input()) != 0) {
+                        scancol++;
+                        if (s == '"') break;
+                        if (s == '\n') {
+                            countLines();
+                            break;
+                            }
+                        }
+                    }
+                BEGIN(INITIAL);
+                return ERROR;}
+
+<STRING_MODE>{newline}  {yyerror = "String spans multiple lines";
+                        yylineno = startLine;
+                        yycol = startCol;
+                        scancol = 1;
+                        BEGIN(INITIAL);
+                        return ERROR;}
+
+<STRING_MODE><<EOF>>    {yyerror = "Unterminated string constants;
+                        yycol = startCol;
+                        yylineno = startLine;
+                        BEGIN(INITIAL);
+                        return ERROR;}
+
+<STRING_MODE>.          {scancol++; strbuf[strpos++] = yytext[0];}
 
  /* Comments - start conditions used */
 
