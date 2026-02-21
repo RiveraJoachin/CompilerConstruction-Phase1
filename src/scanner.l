@@ -114,7 +114,7 @@ character       \'([^\'\\]|\\.)\
  /* Other */
 {newline}       {countLines();}
 {whitespace}    {scancol += yyleng;}
-.               {return ILLEGAL_TOK;}
+.               {updateCol(); return ILLEGAL_TOK;}
 
 %%
 
