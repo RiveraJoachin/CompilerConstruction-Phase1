@@ -20,6 +20,7 @@ int startCol;
  /* functions to update line and column numbers */
 void updateCol();
 void countLines();
+int processCharacters();
 
 #define BUFFER_SIZE 4096 
 char temp [BUFFER_SIZE];
@@ -41,15 +42,6 @@ character       \'([^\'\\]|\\.)\
 %%
 
  /* rules */
-
- /* Keywords */
-"if"            {updateCol(); return KWD_IF;}
-"else"          {updateCol(); return KWD_ELSE;}
-"while"         {updateCol(); return KWD_WHILE;}
-"int"           {updateCol(); return KWD_INT;}
-"char"          {updateCol(); return KWD_CHAR;}
-"return"        {updateCol(); return KWD_RETURN;}
-"void"          {updateCol(); return KWD_VOID;}
 
  /* Operators */
 "++"            {updateCol(); return OPER_INC;}
@@ -84,7 +76,7 @@ character       \'([^\'\\]|\\.)\
 
  /* Identifiers */
 
-{identifier}    {updateCol(); return ID;}
+{identifier}    {updateCol(); return processCharacters();}
 
  /* Constants */
 
@@ -119,6 +111,21 @@ character       \'([^\'\\]|\\.)\
 %%
 
 /* user routines */
+/* Make characters in identifier lowercase then check for keywords */
+int processCharacters() {
+    for (inti=0; yytext[i]; ++i) {
+        yytext[i] |= 0x20;
+    }
+    if      (strcmp(yytext, "if") ==0) return KWD_IF;
+    else if (strcmp(yytext, "else")   == 0) return KWD_ELSE;
+    else if (strcmp(yytext, "while")  == 0) return KWD_WHILE;
+    else if (strcmp(yytext, "int")    == 0) return KWD_INT;
+    else if (strcmp(yytext, "string") == 0) return KWD_STRING;
+    else if (strcmp(yytext, "char")   == 0) return KWD_CHAR;
+    else if (strcmp(yytext, "return") == 0) return KWD_RETURN;
+    else if (strcmp(yytext, "void")   == 0) return KWD_VOID;
+    return ID;
+}
 
 /* Implement this function to keep track of column numbers */
 void updateCol(){
