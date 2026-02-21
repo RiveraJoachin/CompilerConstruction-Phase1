@@ -81,40 +81,23 @@ character       \'([^\'\\]|\\.)\
 
 
  /* Identifiers */
-{identifier} {
-    updateCol();
 
-    return ID;
-}
+{identifier}    {updateCol(); return ID;}
 
  /* Constants */
-{integer} {
-    updateCol();
-   
-    return INTCONST;
-}
 
+{integer}       {updateCol(); return INTCONST;}
 
-{character} {
-    updateCol();
-    
-    return CHARCONST;
-}
+{character}     {updateCol(); return CHARCONST;}
 {string}        {updateCol(); return KWD_STRING;}
-{untermstring}  {updateCol(); yyerror = "Unterminated string"; return ERROR;}
 
  /* Comments */
-{comment} {
-    updateCol();
-    
-
-    /* ignore comments, no need for returning a token */
-}
+{comment}       {updateCol(); /* ignore comments, no need for returning a token */}
 
 
  /* Other */
-{newline}       { countLines(); }
-{whitespace}    { scancol += yyleng; }
+{newline}       {countLines();}
+{whitespace}    {scancol += yyleng;}
 .               {return ILLEGAL_TOK;}
 
 %%
