@@ -23,8 +23,8 @@ void countLines();
 int processCharacters();
 
 #define BUFFER_SIZE 4096 
-char temp [BUFFER_SIZE];
-int pos;
+char strbuf[BUFFER_SIZE];
+int strpos;
 %}
 
 %option noyywrap
@@ -35,7 +35,7 @@ letter          [a-zA-Z]
 digit           [0-9]
 integer         0|[1-9][0-9]*
 identifier      {letter}({letter}|{digit})*
-character       \'([^\'\\]|\\.)\
+character       \'([^\'\\]|\\.)\'
 
 %x COMMENT_MODE
 %x STRING_MODE
@@ -43,6 +43,10 @@ character       \'([^\'\\]|\\.)\
 %%
 
  /* rules */
+
+ /* Whitespace and Newlines */
+{newline}       {countLines();}
+{whitespace}    {scancol += yyleng;}
 
  /* Operators */
 "++"            {updateCol(); return OPER_INC;}
@@ -63,6 +67,7 @@ character       \'([^\'\\]|\\.)\
 "<"             {updateCol(); return OPER_LT;}
 ">"             {updateCol(); return OPER_GT;}
 "="             {updateCol(); return OPER_ASGN;}
+"@"             {updateCol(); return OPER_AT;}
 "!"             {updateCol(); return OPER_NOT;}
 
 "["             {updateCol(); return LSQ_BRKT;}
@@ -90,7 +95,7 @@ character       \'([^\'\\]|\\.)\
                 startLine = yylineno;
                 startCol = yycol;
                 strpos = 0;
-                BEGIN(IN_STRING);}
+                BEGIN(STRING_MODE);}
 
 <STRING_MODE>\"         {scancol++;
                         strbuf[strpos] = '\0';
@@ -105,23 +110,22 @@ character       \'([^\'\\]|\\.)\
 <STRING_MODE>\\\"       {scancol += 2; strbuf[strpos++] = '"';}
 <STRING_MODE>\\\\       {scancol += 2; strbuf[strpos++] = '\\';}
 
-/* incorrect escape sequence reproduce an error */
-<STRING_MODE>\\[^\n]   {scancol += 2;
-                       yyerror = "Unrecognized escape character in String";
-                       yycol = startCol;
-                       /* eat the rest of the string so we dont get garbage output */
-                       {int s;
-                        while ((s = input()) != 0) {
-                        scancol++;
-                        if (s == '"') break;
-                        if (s == '\n') {
-                            countLines();
-                            break;
+/* incorrect escape sequence produces an error */
+<STRING_MODE>\\[^\n]    {scancol += 2;
+                        yyerror = "Unrecognized escape character in String";
+                        yycol = startCol;
+                        {int s;
+                         while ((s = input()) != 0) {
+                            scancol++;
+                            if (s == '"') break;
+                            if (s == '\n') {
+                                countLines();
+                                break;
                             }
+                         }
                         }
-                    }
-                BEGIN(INITIAL);
-                return ERROR;}
+                        BEGIN(INITIAL);
+                        return ERROR;}
 
 <STRING_MODE>{newline}  {yyerror = "String spans multiple lines";
                         yylineno = startLine;
@@ -130,7 +134,7 @@ character       \'([^\'\\]|\\.)\
                         BEGIN(INITIAL);
                         return ERROR;}
 
-<STRING_MODE><<EOF>>    {yyerror = "Unterminated string constants;
+<STRING_MODE><<EOF>>    {yyerror = "Unterminated string constant";
                         yycol = startCol;
                         yylineno = startLine;
                         BEGIN(INITIAL);
@@ -145,7 +149,7 @@ character       \'([^\'\\]|\\.)\
                 scancol += 2;
                 BEGIN(COMMENT_MODE);}
 
-<COMMENT_MODE>"*/"      {scancol +=2; BEGIN(INITIAL);}
+<COMMENT_MODE>"*/"      {scancol += 2; BEGIN(INITIAL);}
 <COMMENT_MODE>{newline} {countLines();}
 <COMMENT_MODE>.         {scancol++;}
 
@@ -155,10 +159,7 @@ character       \'([^\'\\]|\\.)\
                         BEGIN(INITIAL);
                         return ERROR;}
 
-
- /* Other */
-{newline}       {countLines();}
-{whitespace}    {scancol += yyleng;}
+ /* Catch-all */
 .               {updateCol(); return ILLEGAL_TOK;}
 
 %%
@@ -166,10 +167,10 @@ character       \'([^\'\\]|\\.)\
 /* user routines */
 /* Make characters in identifier lowercase then check for keywords */
 int processCharacters() {
-    for (inti=0; yytext[i]; ++i) {
+    for (int i=0; yytext[i]; ++i) {
         yytext[i] |= 0x20;
     }
-    if      (strcmp(yytext, "if") ==0) return KWD_IF;
+    if      (strcmp(yytext, "if")     == 0) return KWD_IF;
     else if (strcmp(yytext, "else")   == 0) return KWD_ELSE;
     else if (strcmp(yytext, "while")  == 0) return KWD_WHILE;
     else if (strcmp(yytext, "int")    == 0) return KWD_INT;
