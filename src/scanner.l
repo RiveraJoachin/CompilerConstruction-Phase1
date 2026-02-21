@@ -86,12 +86,6 @@ character       \'([^\'\\]|\\.)\
 
     return ID;
 }
-{illidentifier} {
-    updateCol();
-    
-    yyerror = "Illegal identifier";
-    return ERROR;
-}
 
  /* Constants */
 {integer} {
@@ -99,12 +93,8 @@ character       \'([^\'\\]|\\.)\
    
     return INTCONST;
 }
-{integerlead0} {
-    updateCol();
-    
-    yyerror = "Illegal integer constant with leading zeros (except for 0 itself)";
-    return ERROR;
-}
+
+
 {character} {
     updateCol();
     
@@ -120,19 +110,7 @@ character       \'([^\'\\]|\\.)\
 
     /* ignore comments, no need for returning a token */
 }
-{untermcomment} {
-    updateCol();
-    
 
-    yyerror = "Unterminated/unfinished comment";
-    return ERROR;
-}
-{multlncomment} {
-    updateCol();
-    
-
-    /* ignore comments, no need for returning a token */
-}
 
  /* Other */
 {newline}       { countLines(); }
