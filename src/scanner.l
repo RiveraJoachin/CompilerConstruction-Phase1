@@ -36,6 +36,8 @@ integer         0|[1-9][0-9]*
 identifier      {letter}({letter}|{digit})*
 character       \'([^\'\\]|\\.)\
 
+%x COMMENT_MODE
+
 %%
 
  /* rules */
@@ -91,8 +93,22 @@ character       \'([^\'\\]|\\.)\
 {character}     {updateCol(); return CHARCONST;}
 {string}        {updateCol(); return KWD_STRING;}
 
- /* Comments */
-{comment}       {updateCol(); /* ignore comments, no need for returning a token */}
+ /* Comments - start conditions used */
+
+"/*"            {startLine = yylineno;
+                startCol = scancol;
+                scancol += 2;
+                BEGIN(COMMENT_MODE);}
+
+<COMMENT_MODE>"*/"      {scancol +=2; BEGIN(INITIAL);}
+<COMMENT_MODE>{newline} {countLines();}
+<COMMENT_MODE>.         {scancol++;}
+
+<COMMENT_MODE><<EOF>>   {yyerror = "Unterminated comment";
+                        yycol = startCol;
+                        yylineno = startLine;
+                        BEGIN(INITIAL);
+                        return ERROR;}
 
 
  /* Other */
