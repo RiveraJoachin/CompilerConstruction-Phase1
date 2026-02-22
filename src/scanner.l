@@ -89,7 +89,7 @@ character       \'([^\'\\]|\\.)\'
 {integer}       {updateCol(); return INTCONST;}
 {character}     {updateCol(); return CHARCONST;}
 
-/* String Constants */
+ /* String Constants */
 
 \"              {updateCol();
                 startLine = yylineno;
@@ -104,13 +104,13 @@ character       \'([^\'\\]|\\.)\'
                         BEGIN(INITIAL);
                         return STRCONST;}
 
-/* correct escape sequences */
+ /* correct escape sequences */
 <STRING_MODE>\\n        {scancol += 2; strbuf[strpos++] = '\n';}
 <STRING_MODE>\\t        {scancol += 2; strbuf[strpos++] = '\t';}
 <STRING_MODE>\\\"       {scancol += 2; strbuf[strpos++] = '"';}
 <STRING_MODE>\\\\       {scancol += 2; strbuf[strpos++] = '\\';}
 
-/* incorrect escape sequence produces an error */
+ /* incorrect escape sequence produces an error */
 <STRING_MODE>\\[^\n]    {scancol += 2;
                         yyerror = "Unrecognized escape character in String";
                         yycol = startCol;
