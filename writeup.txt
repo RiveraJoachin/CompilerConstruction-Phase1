@@ -1,0 +1,19 @@
+1. Johana Rivera Joachin & Jacqueline Medrano,  CS4318 Compiler Construction
+
+2. Johana worked on the definitions section of the scanner, while Jacqueline worked on the rules section.
+    Jacqueline went and fixed some syntax errors. Johana also then went and edited the rules section by reordering the previously added information and 
+     added a function to process characters in the rules section.
+
+3. We ran our code my using the commands given on the pdf. 
+    But we tested our code by using the command  "echo" followed by a string with different escape characters and then piped it to our scanner. 
+    For example, we used the command: echo "This is a string with an escaped quote: \" and an escaped tab: \t" | ./scanner.
+    we also tested with "int main() { /* declare variable */ int x = 5; if (x >= 10) { return 0; } }" 
+    to test the comments and keywords.
+
+    aka piping.
+    ex: echo 'int x = 5;' | ./obj/scanner
+    ex: int main() { /* declare variable */ int x = 5; if (x >= 10) { return 0; } }
+
+4. No extra grading instructions were used, aside from the given instructions in the pdf.
+
+
