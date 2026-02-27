@@ -2,18 +2,50 @@
 
 2. Johana worked on the definitions section of the scanner, while Jacqueline worked on the rules section.
     Jacqueline went and fixed some syntax errors. Johana also then went and edited the rules section by reordering the previously added information and 
-     added a function to process characters in the rules section.
+     added a function to process characters in the user routines section.
 
-3. We ran our code my using the commands given on the pdf. 
-    But we tested our code by using the command  "echo" followed by a string with different escape characters and then piped it to our scanner. 
-    For example, we used the command: echo "This is a string with an escaped quote: \" and an escaped tab: \t" | ./scanner.
-    we also tested with "int main() { /* declare variable */ int x = 5; if (x >= 10) { return 0; } }" 
-    to test the comments and keywords.
+3.  Aside from the given test cases, we tested our code by using the command  "echo" followed by a string with different escape characters and then piped it to our scanner. 
+    Also known as Piping.
 
-    aka piping.
-    ex: echo 'int x = 5;' | ./obj/scanner
+    Test Case A: Illegal tokens.
+    ex: echo 'int ~ # $ x;'
+    output:
+    <KEYWORD, int> : (1:1)
+    <ILLEGAL TOKEN,~: (1:5)
+    <ILLEGAL TOKEN, #>: (1:7)
+    <ILLEGAL TOKEN, $>: (1:9)
+    <ID, x> : (1:11)
+    <PUNCTUATION, ;> : (1:12)
+    
+
+    Test Case B: Mixed programs with comments.
+    we used  the command: echo "int main(){...}
     ex: int main() { /* declare variable */ int x = 5; if (x >= 10) { return 0; } }
-
+    output:
+    <KEYWORD, int> : (1:1)
+    < ID, main› : (1:5)
+    <PUNCTUATION, (> : (1:9)
+    <PUNCTUATION, )>: (1:10)
+    <PUNCTUATION, {> : (1:12)
+    <KEYWORD, int> : (2:5)
+    <ID, x>: (2:9)
+    <OPERATOR, →> : (2:11)
+    <INTEGER, 5(2:13)
+    <PUNCTUATION,;: (2:14)
+    <KEYWORD, if>: (3:5)
+    «PUNCTUATION, (> : (3:8)
+    <ID, x> : (3:9)
+    <OPERATOR, >> : (3:11)
+    <INTEGER, 10> : (3:14)
+    <PUNCTUATION, )>: (3:16)
+    <PUNCTUATION, {> : (3:18)
+    <KEYWORD, return›: (4:9)
+    <INTEGER, 0>: (4:16)
+    <PUNCTUATION, }> (4:17)
+    <PUNCTUATION, }>: (5:5)
+        
+        
+        
 4. No extra grading instructions were used, aside from the given instructions in the pdf.
 
 
